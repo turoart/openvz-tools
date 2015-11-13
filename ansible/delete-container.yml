@@ -1,0 +1,19 @@
+---
+- name: Delete container
+  hosts: crbio-host
+  user: root
+  vars_prompt:
+    - name: "delete"
+      prompt: "Are you sure you want to delete the container?"
+      default: "N"
+      private: no
+  tasks:
+    - set_fact:
+        var_delete: "{{ delete }}"
+   
+    - name: Stop container
+      shell: vzctl stop {{ hostvars[container]['openvz-id'] }}
+
+    - name: Delete container
+      shell: vzctl delete {{ hostvars[container]['openvz-id'] }}
+      when: delete == 'Y' or delete == 'yes'
